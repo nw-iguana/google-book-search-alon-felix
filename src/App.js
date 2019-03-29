@@ -1,25 +1,38 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
+import Form from './components/Form';
+import Results from './components/Results';
 import './App.css';
 
 class App extends Component {
+  state = {
+    isLoading: false,
+    results: []
+  };
+
+  getData(searchTerm) {
+    this.goFetch(searchTerm);
+  }
+
+  goFetch(searchTerm) {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${searchTerm}`;
+    fetch(url)
+      .then(response => response.json())
+      .then(responseJson => {
+        console.log(responseJson);
+        this.setState({ results: responseJson.items });
+      });
+  }
+
   render() {
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+      <div className="container">
+        <nav>
+          <h1>Google Book Search</h1>
+        </nav>
+        <main>
+          <Form getData={searchTerm => this.getData(searchTerm)} />
+          <Results results={this.state.results} />
+        </main>
       </div>
     );
   }
